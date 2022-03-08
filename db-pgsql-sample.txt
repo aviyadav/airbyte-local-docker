@@ -1,0 +1,38 @@
+git clone https://github.com/airbytehq/airbyte.git
+cd airbyte
+docker-compose up
+
+
+http://localhost:8000
+
+
+
+
+docker run --rm --name airbyte-source -e POSTGRES_PASSWORD=password -p 2000:5432 -d postgres
+docker run --rm --name airbyte-destination -e POSTGRES_PASSWORD=password -p 3000:5432 -d postgres
+
+
+
+docker exec -it airbyte-source psql -U postgres -c "CREATE TABLE users(id SERIAL PRIMARY KEY, col1 VARCHAR(200));"
+docker exec -it airbyte-source psql -U postgres -c "INSERT INTO public.users(col1) VALUES('record1');"
+docker exec -it airbyte-source psql -U postgres -c "INSERT INTO public.users(col1) VALUES('record2');"
+docker exec -it airbyte-source psql -U postgres -c "INSERT INTO public.users(col1) VALUES('record3');"
+
+airbyte-source
+  Host: localhost
+  Port: 2000
+  User: postgres
+  Password: password
+  DB Name: postgres
+
+
+  airbyte-destination
+    Host: localhost
+    Port: 3000
+    User: postgres
+    Password: password
+    DB Name: postgres
+
+
+
+docker exec airbyte-destination psql -U postgres -c "SELECT * FROM public.users;"
